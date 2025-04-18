@@ -97,10 +97,17 @@ const getArticleByIdController = async (req, res) => {
 // Get all articles
 const getAllArticlesController = async (req, res) => {
   const onlyPublished = req.query.published === "true";
+  const page = parseInt(req.query.page) || 1; // default page = 1
+  const limit = parseInt(req.query.limit) || 10; // default limit = 10
+  const offset = (page - 1) * limit;
 
   try {
-    const articles = await getAllArticles(onlyPublished);
-    return res.status(200).json(articles);
+    const articles = await getAllArticles({ onlyPublished, limit, offset });
+    return res.status(200).json({
+      page,
+      limit,
+      articles,
+    });
   } catch (err) {
     console.error("Get All Articles Error:", err.message);
     return res.status(500).json({ error: "Internal server error" });

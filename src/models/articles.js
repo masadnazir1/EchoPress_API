@@ -52,15 +52,29 @@ const getArticleById = async (id) => {
 };
 
 // Get all articles (optionally filter published)
-const getAllArticles = async (onlyPublished = false) => {
+// src/models/Article.js
+
+const getAllArticles = async ({ onlyPublished, limit, offset }) => {
+  let query = "SELECT * FROM articles";
+  const values = [];
+
+  if (onlyPublished) {
+    values.push(true);
+    query += ` WHERE is_published = $${values.length}`;
+  }
+
+  values.push(limit); // limit
+  values.push(offset); // offset
+  query += ` ORDER BY published_at DESC LIMIT $${values.length - 1} OFFSET $${
+    values.length
+  }`;
+
   try {
-    const query = onlyPublished
-      ? "SELECT * FROM articles WHERE is_published = TRUE ORDER BY published_at DESC"
-      : "SELECT * FROM articles ORDER BY published_at DESC";
-    const articles = await db.any(query);
-    return articles;
+    const result = await db.query(query, values);
+
+    return result;
   } catch (err) {
-    throw new Error("Error fetching articles");
+    throw new Error("Error fetching articles: " + err.message);
   }
 };
 
