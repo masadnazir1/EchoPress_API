@@ -8,6 +8,7 @@ const path = require("path");
 // Routes (to be implemented)
 const authRoute = require("./src/routes/auth");
 const sliderRoute = require("./src/routes/SliderRoute");
+const ArticleRoutes = require("./src/routes/articleRoute");
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -23,8 +24,8 @@ app.use(
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 //
-// Make uploads publicly accessible
-// ✅ CORRECT
+// uploads publicly accessible
+
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Test route
@@ -35,9 +36,10 @@ app.get("/", (req, res) => {
 // Attach your routes
 app.use("/api/auth", authRoute);
 app.use("/api/sliders", sliderRoute);
+app.use("/api/articles", ArticleRoutes);
 
 // Start server
-app.listen(port, () => {
+app.listen(port, "0.0.0.0", () => {
   db.connect();
   console.log(`🚀 Server running on http://localhost:${port}`);
 });
