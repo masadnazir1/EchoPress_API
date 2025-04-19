@@ -3,12 +3,12 @@ const db = require('../../config/db'); // Adjust the path to your db config
 
 // Create a new user
 const createUser = async (user) => {
-  const {newUuid, name, email, password, role = 'user' } = user;
-  console.log('Creating user:',newUuid, name, email, password, role);
+  const {newUuid, name, email,picture, password, role = 'user' } = user;
+  console.log('Creating user:',newUuid, name, email, picture, password, role);
   try {
     const result = await db.one(
-      'INSERT INTO users(id,name, email, password, role) VALUES($1, $2, $3, $4,$5) RETURNING *',
-      [newUuid,name, email, password, role]
+      'INSERT INTO users(id,name, email, profile_picture,password, role) VALUES($1, $2, $3, $4,$5 ,$6) RETURNING *',
+      [newUuid,name, email,picture, password, role]
     );
     return result;
   } catch (err) {
@@ -16,6 +16,11 @@ const createUser = async (user) => {
     throw new Error(`Error creating user: ${err.message}`); // Include the error message
   }
 };
+
+
+
+
+
 
 // Get a user by ID
 const getUserById = async (id) => {
