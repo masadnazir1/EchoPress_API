@@ -113,7 +113,7 @@ const googleAuth = async (req, res) => {
 
     // Generate a JWT token for the authenticated user
     const jwtToken = jwt.sign(
-      { id: user.id, email: user.email, role: user.role },
+      { id: user.id, email: user.email, role: user.role ,pic:picture},
       JWT_SECRET,
       { expiresIn: '7d' }
     );
