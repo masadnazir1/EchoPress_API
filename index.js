@@ -10,6 +10,7 @@ const authRoute = require("./src/routes/auth");
 const sliderRoute = require("./src/routes/SliderRoute");
 const ArticleRoutes = require("./src/routes/articleRoute");
 const savedArticleRoutes = require("./src/routes/savedArticlesRoute");
+const categoryRoute = require("./src/routes/categoryRoute");
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -39,6 +40,7 @@ app.use("/api/auth", authRoute);
 app.use("/api/sliders", sliderRoute);
 app.use("/api/articles", ArticleRoutes);
 app.use("/api/savedarticles", savedArticleRoutes);
+app.use("/api/categories", categoryRoute);
 
 // Start server
 app.listen(port, "0.0.0.0", () => {
