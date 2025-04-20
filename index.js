@@ -9,6 +9,7 @@ const path = require("path");
 const authRoute = require("./src/routes/auth");
 const sliderRoute = require("./src/routes/SliderRoute");
 const ArticleRoutes = require("./src/routes/articleRoute");
+const savedArticleRoutes = require("./src/routes/savedArticlesRoute");
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -24,8 +25,8 @@ app.use(
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 //
-// uploads publicly accessible
 
+// uploads publicly accessible
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Test route
@@ -37,6 +38,7 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRoute);
 app.use("/api/sliders", sliderRoute);
 app.use("/api/articles", ArticleRoutes);
+app.use("/api/savedarticles", savedArticleRoutes);
 
 // Start server
 app.listen(port, "0.0.0.0", () => {
