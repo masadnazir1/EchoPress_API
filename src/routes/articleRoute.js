@@ -10,6 +10,7 @@ const {
   getAllArticlesController,
   updateArticleController,
   deleteArticleController,
+  getAllArticlesByCategory,
 } = require("../controllers/articleController");
 
 // CREATE an article (with image upload)
@@ -17,6 +18,9 @@ Router.post("/create", upload.single("cover_image"), createArticleController);
 
 // GET all articles (optional query: ?published=true)
 Router.get("/all", getAllArticlesController);
+
+// ✅ Place this before `/:id`
+Router.get("/category", getAllArticlesByCategory);
 
 // GET an article by ID
 Router.get("/:id", getArticleByIdController);

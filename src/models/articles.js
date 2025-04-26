@@ -13,13 +13,14 @@ const createArticle = async (article) => {
     markdown_content,
     summary = null,
     cover_image_url = null,
+    categories_id,
   } = article;
 
   try {
     const result = await db.one(
       `INSERT INTO articles 
-      (title, slug, author_id, published_at, is_published, tags, markdown_content, summary, cover_image_url)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+      (title, slug, author_id, published_at, is_published, tags, markdown_content, summary, cover_image_url,categories_id)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9,$10)
       RETURNING *`,
       [
         title,
@@ -31,6 +32,7 @@ const createArticle = async (article) => {
         markdown_content,
         summary,
         cover_image_url,
+        categories_id,
       ]
     );
     return result;
@@ -41,6 +43,9 @@ const createArticle = async (article) => {
 
 // Get an article by ID
 const getArticleById = async (id) => {
+  //
+  console.log("", id);
+  //
   try {
     const article = await db.oneOrNone("SELECT * FROM articles WHERE id = $1", [
       id,
@@ -48,6 +53,38 @@ const getArticleById = async (id) => {
     return article;
   } catch (err) {
     throw new Error("Article not found");
+  }
+};
+
+// Get an article by ID
+const getArticleByCategory = async (
+  onlyPublished,
+  limit,
+  offset,
+  categoryId
+) => {
+  let query = "SELECT * FROM articles WHERE categories_id = $1";
+  const values = [categoryId];
+
+  if (onlyPublished) {
+    values.push(true);
+    query += ` AND is_published = $${values.length}`;
+  }
+
+  console.log(values);
+  values.push(limit); // limit
+  values.push(offset); // offset
+
+  query += ` ORDER BY published_at DESC LIMIT $${values.length - 1} OFFSET $${
+    values.length
+  }`;
+
+  try {
+    const result = await db.query(query, values);
+
+    return result;
+  } catch (err) {
+    throw new Error("Error fetching articles by category: " + err.message);
   }
 };
 
@@ -109,4 +146,5 @@ module.exports = {
   getAllArticles,
   updateArticle,
   deleteArticle,
+  getArticleByCategory,
 };

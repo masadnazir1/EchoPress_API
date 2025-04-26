@@ -5,6 +5,7 @@ const {
   getAllArticles,
   updateArticle,
   deleteArticle,
+  getArticleByCategory,
 } = require("../models/articles");
 
 const path = require("path");
@@ -40,6 +41,7 @@ const createArticleController = async (req, res) => {
     tags,
     markdown_content,
     summary,
+    categories_id,
   } = req.body;
 
   if (!title || !slug || !author_id || !markdown_content) {
@@ -65,6 +67,7 @@ const createArticleController = async (req, res) => {
       markdown_content,
       summary,
       cover_image_url,
+      categories_id,
     });
 
     return res
@@ -114,6 +117,36 @@ const getAllArticlesController = async (req, res) => {
   }
 };
 
+// Get all articles by category id
+const getAllArticlesByCategory = async (req, res) => {
+  const onlyPublished = req.query.published === "true";
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const offset = (page - 1) * limit;
+  const CategoryId = req.query.categoryId; // get specific categoryId from query
+
+  if (!CategoryId) {
+    return res.status(400).json({ error: "categoryId is required in query" });
+  }
+
+  try {
+    const articles = await getArticleByCategory(
+      onlyPublished,
+      limit,
+      offset,
+      CategoryId
+    );
+    return res.status(200).json({
+      page,
+      limit,
+      articles,
+    });
+  } catch (err) {
+    console.error("Get All Articles by Category Error:", err.message);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 // Update article
 const updateArticleController = async (req, res) => {
   const { id } = req.params;
@@ -147,4 +180,5 @@ module.exports = {
   getAllArticlesController,
   updateArticleController,
   deleteArticleController,
+  getAllArticlesByCategory,
 };
