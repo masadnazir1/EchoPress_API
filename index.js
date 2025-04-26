@@ -12,6 +12,7 @@ const ArticleRoutes = require("./src/routes/articleRoute");
 const savedArticleRoutes = require("./src/routes/savedArticlesRoute");
 const categoryRoute = require("./src/routes/categoryRoute");
 const userInterest = require("./src/routes/userInterestRoutes");
+const SearchArticles = require("./src/routes/SearchRoute");
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -33,11 +34,13 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Test route
 app.get("/", (req, res) => {
+  console.log(req.baseUrl);
   res.send("📣 EchoPress API is up and running!");
 });
 
 // Attach your routes
 app.use("/api/auth", authRoute);
+app.use("/api/search", SearchArticles);
 app.use("/api/sliders", sliderRoute);
 app.use("/api/articles", ArticleRoutes);
 app.use("/api/savedarticles", savedArticleRoutes);

@@ -139,6 +139,50 @@ const deleteArticle = async (id) => {
     throw new Error("Error deleting article");
   }
 };
+//
+
+// Search articles by keyword
+const searchArticles = async ({ keyword, onlyPublished, limit, offset }) => {
+  let query = "SELECT * FROM articles WHERE";
+  const values = [];
+  const searchConditions = [];
+
+  if (keyword) {
+    values.push(`%${keyword}%`);
+    values.push(`%${keyword}%`);
+    values.push(`%${keyword}%`);
+    values.push(`%${keyword}%`);
+    //
+    searchConditions.push(
+      `(title ILIKE $${values.length - 3} OR 
+        ARRAY_TO_STRING(tags, ',') ILIKE $${values.length - 2} OR 
+        summary ILIKE $${values.length - 1} OR 
+        markdown_content ILIKE $${values.length})`
+    );
+  }
+
+  if (onlyPublished) {
+    values.push(true);
+    searchConditions.push(`is_published = $${values.length}`);
+  }
+
+  query += ` ${searchConditions.join(" AND ")}`;
+  values.push(limit);
+  values.push(offset);
+
+  query += ` ORDER BY published_at DESC LIMIT $${values.length - 1} OFFSET $${
+    values.length
+  }`;
+
+  try {
+    const result = await db.query(query, values);
+    return result;
+  } catch (err) {
+    throw new Error("Error searching articles: " + err.message);
+  }
+};
+
+//
 
 module.exports = {
   createArticle,
@@ -147,4 +191,5 @@ module.exports = {
   updateArticle,
   deleteArticle,
   getArticleByCategory,
+  searchArticles,
 };
